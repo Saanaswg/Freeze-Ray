@@ -91,7 +91,7 @@ function SWEP:PrimaryAttack()
 				
 				-- Spawning a cute ice thing around the player
 				local ice = ents.Create("prop_dynamic")
-				ply.sypice = ice
+				ply.__swgice = ice
 				timer.Simple(0.2, function() 
 					ice:SetModel("models/props_wasteland/rockcliff01f.mdl")
 					ice:SetModelScale(0.6)
@@ -103,8 +103,8 @@ function SWEP:PrimaryAttack()
 				end)
 				
 				-- The target is unfrozen after 5 seconds
-				timer.Simple(5, function() if IsValid(ice) then ice:Remove() end ply.sypice = nil end)
-				timer.Create("syphonfreeze" .. ply:SteamID(), 5, 1, function()
+				timer.Simple(5, function() if IsValid(ice) then ice:Remove() end ply.__swgice = nil end)
+				timer.Create("__swgfreeze" .. ply:SteamID(), 5, 1, function()
 					ply:Freeze(false)
 					ply:EmitSound("physics/glass/glass_pottery_break4.wav")	
 				end)
@@ -132,14 +132,14 @@ end
 function SWEP:SecondaryAttack() end
 
 -- If the player dies it removes the unfreeze timer so it doesnt play the sound and unfreeze them after theyve already respawned
-hook.Add("PlayerDeath", "syphonfreeze", function(ply)
-	if not timer.Exists("syphonfreeze" .. ply:SteamID()) then return end
+hook.Add("PlayerDeath", "__swgfreeze", function(ply)
+	if not timer.Exists("__swgfreeze" .. ply:SteamID()) then return end
 	
-	if ply.sypice and IsValid(ply.sypice) then
-		ply.sypice:Remove()
-		ply.sypice = nil
+	if ply.__swgice and IsValid(ply.__swgice) then
+		ply.__swgice:Remove()
+		ply.__swgice = nil
 	end
 	
 	ply:Freeze(false)
-	timer.Remove("syphonfreeze" .. ply:SteamID())
+	timer.Remove("__swgfreeze" .. ply:SteamID())
 end)
